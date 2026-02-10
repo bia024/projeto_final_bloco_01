@@ -8,18 +8,8 @@ const produtos = new ProdutoController();
 
 produtos.cadastrar(new Cosmetico(produtos.gerarId(), "Batom Matte Passoia", 1, 45.9, "Floral"));
 produtos.cadastrar(new Cosmetico(produtos.gerarId(), "Perfume Libre", 1, 580.0, "Floral"));
-produtos.cadastrar(new Maquiagem(produtos.gerarId(), "Base True Match", 1, 89.9, "Líquida"));
-produtos.cadastrar(new Medicamento(produtos.gerarId(), "Shampoo Hidratante", 2, 89.90, "Pós-Química"));
-
-console.log("\n *** Listagem de Produtos no Controller ***");
-produtos.listarTodos();
-
-console.log("\n*** Teste de Busca por ID ***");
-produtos.procurarPorId(2);
-
-console.log("\n*** Teste de Busca por ID ***");
-produtos.procurarPorId(99);
-
+produtos.cadastrar(new Maquiagem(produtos.gerarId(), "Base True Match", 1, 89.9, "Liquida"));
+produtos.cadastrar(new Medicamento(produtos.gerarId(), "Shampoo Hidratante", 2, 89.90, "Pos-Quimica"));
 
 export function main() {
     let opcao: number;
@@ -30,17 +20,15 @@ export function main() {
         console.log("                  PASSOIA E-COMMERCE                 ");
         console.log("                                                     ");
         console.log("*****************************************************");
-        console.log("                                                     ");
         console.log("            1 - Listar todos os Produtos             ");
         console.log("            2 - Listar Produto pelo ID                ");
         console.log("            3 - Cadastrar Produto                    ");
         console.log("            4 - Atualizar Produto                    ");
         console.log("            5 - Deletar Produto                      ");
         console.log("            0 - Sair                                 ");
-        console.log("                                                     ");
         console.log("*****************************************************");
 
-        console.log("\nEntre com a opção desejada:");
+        console.log("\nEntre com a opcao desejada:");
         opcao = Input.questionInt("");
 
         if (opcao === 0) {
@@ -51,101 +39,137 @@ export function main() {
 
         switch (opcao) {
             case 1:
-                console.log("\nListar todos os Produtos\n");
+                console.log("\n*****************************************************");
+                console.log("             LISTAR TODOS OS PRODUTOS                ");
+                console.log("*****************************************************\n");
                 produtos.listarTodos();
                 keyPress();
                 break;
 
             case 2:
-                console.log("\nListar Produto pelo ID\n");
-                console.log("Digite o ID do produto: ");
-                let idBusca = Input.questionInt("");
-                produtos.procurarPorId(idBusca);
+                console.log("\n*****************************************************");
+                console.log("               CONSULTAR PRODUTO                     ");
+                console.log("*****************************************************\n");
+                let idBusca = Input.questionInt("Digite o ID: ");
+                let prod = produtos.buscarNoArray(idBusca);
+
+                if (prod !== null) {
+                    prod.visualizar();
+
+                    console.log("\n[CARRINHO] Deseja comprar este item? (S/N)");
+                    if (Input.question("").toUpperCase() === "S") {
+                        
+                        console.log("\n--- LOGISTICA ---");
+                        console.log("1 - Entrega (+ R$ 15.00)");
+                        console.log("2 - Retirada na Loja (Gratis)");
+                        let opFrete = Input.questionInt("Opcao: ");
+                        let frete = (opFrete === 1) ? 15.0 : 0.0;
+
+                        console.log("\n--- PAGAMENTO ---");
+                        console.log("1 - PIX (5% de desconto)");
+                        console.log("2 - Boleto");
+                        let opPag = Input.questionInt("Opcao: ");
+
+                        let subtotal = prod.preco + frete;
+                        let total = (opPag === 1) ? subtotal * 0.95 : subtotal;
+
+                        console.log("\n===============================");
+                        console.log("       RECIBO PASSOIA          ");
+                        console.log(` PRODUTO: ${prod.nome}`);
+                        console.log(` ENVIO:   ${opFrete === 1 ? "Delivery" : "Balcao"}`);
+                        console.log(` TOTAL:   R$ ${total.toFixed(2)}`);
+                        console.log("===============================");
+
+                        if (Input.question("\nConfirmar pagamento? (S/N): ").toUpperCase() === "S") {
+                            console.log("\nPagamento aprovado! Deseja retirar do estoque? (S/N)");
+                            if (Input.question("").toUpperCase() === "S") {
+                                produtos.deletar(idBusca);
+                                console.log("Estoque atualizado.");
+                            }
+                        }
+                    }
+                } else {
+                    console.log("\nProduto nao encontrado.");
+                }
                 keyPress();
                 break;
 
             case 3:
-                console.log("\n*** Cadastrar Produto ***\n");
-                console.log("Digite o Nome do Produto: ");
-                let nomeCad = Input.question("");
+                console.log("\n*****************************************************");
+                console.log("               CADASTRAR PRODUTO                     ");
+                console.log("*****************************************************\n");
 
-                console.log("Digite o Preço do Produto: ");
-                let precoCad = Input.questionFloat("");
+                let nome = Input.question("Nome do Produto: ");
+                while (nome.length < 3) {
+                    console.log("Erro: O nome deve ter pelo menos 3 caracteres.");
+                    nome = Input.question("Nome do Produto: ");
+                }
 
-                console.log("Digite o Tipo (1-Cosmético ou 2-Medicamento): ");
-                let tipoCad = Input.questionInt("");
+                let preco = Input.questionFloat("Preco: R$ ");
+                while (preco <= 0) {
+                    console.log("Erro: O preco deve ser maior que zero.");
+                    preco = Input.questionFloat("Preco: R$ ");
+                }
 
-                switch (tipoCad) {
-                    case 1:
-                        console.log("Digite a Fragrância do Cosmético: ");
-                        let fragrancia = Input.question("");
-                        produtos.cadastrar(new Cosmetico(produtos.gerarId(), nomeCad, tipoCad, precoCad, fragrancia));
-                        break;
-                    case 2:
-                        console.log("Digite a Tarja do Medicamento: ");
-                        let tarja = Input.question("");
-                        produtos.cadastrar(new Medicamento(produtos.gerarId(), nomeCad, tipoCad, precoCad, tarja));
-                        break;
-                    default:
-                        console.log("\nTipo inválido!");
+                console.log("Tipo: 1-Cosmetico | 2-Medicamento");
+                let tipo = Input.questionInt("Opcao: ");
+
+                if (tipo === 1) {
+                    let fragrancia = Input.question("Fragrancia: ");
+                    produtos.cadastrar(new Cosmetico(produtos.gerarId(), nome, tipo, preco, fragrancia));
+                } else if (tipo === 2) {
+                    let tarja = Input.question("Tarja (ex: Branca/Amarela): ");
+                    produtos.cadastrar(new Medicamento(produtos.gerarId(), nome, tipo, preco, tarja));
+                } else {
+                    console.log("\n[!] Tipo invalido. Cadastro cancelado.");
                 }
                 keyPress();
                 break;
 
             case 4:
-        console.log("\nAtualizar Produto\n");
-        console.log("Digite o ID do produto para atualizar: ");
-        let idAtualizar = Input.questionInt("");
-        let produtoExistente = produtos.buscarNoArray(idAtualizar);
+                console.log("\n*****************************************************");
+                console.log("               ATUALIZAR PRODUTO                     ");
+                console.log("*****************************************************\n");
+                let idAt = Input.questionInt("Digite o ID: ");
+                let prodEx = produtos.buscarNoArray(idAt);
 
-        if (produtoExistente !== null) {
-          console.log("\nProduto encontrado! Deixe em branco para manter o valor atual.");
-          console.log(`ID atual: ${produtoExistente.id}`);
+                if (prodEx !== null) {
+                    console.log("Deixe vazio para manter o valor atual.");
+                    
+                    let novoNome = Input.question(`Nome (${prodEx.nome}): `);
+                    if (novoNome === "") novoNome = prodEx.nome;
 
-          console.log(`Tipo atual: ${produtoExistente.tipo}`);
+                    let inPreco = Input.question(`Preco (${prodEx.preco}): `);
+                    let novoPreco = inPreco === "" ? prodEx.preco : parseFloat(inPreco);
 
-          console.log(`Nome atual: ${produtoExistente.nome}`);
-          let novoNome = Input.question("Digite o novo nome: ");
-          if (novoNome === "") novoNome = produtoExistente.nome;
-
-          console.log(`Preço atual: ${produtoExistente.preco}`);
-          let inputPreco = Input.question("Digite o novo preço: ");
-          let novoPreco = inputPreco === "" ? produtoExistente.preco : parseFloat(inputPreco);
-
-          let tipo = produtoExistente.tipo;
-
-          if (tipo === 1) {
-            let fragranciaAtual = (produtoExistente as Cosmetico).fragrancia;
-            console.log(`Fragrância atual: ${fragranciaAtual}`);
-            let novaFragrancia = Input.question("Digite a nova fragrância: ");
-            if (novaFragrancia === "") novaFragrancia = fragranciaAtual;
-
-            produtos.atualizar(new Cosmetico(idAtualizar, novoNome, tipo, novoPreco, novaFragrancia));
-          } else if (tipo === 2) {
-            let tarjaAtual = (produtoExistente as Medicamento).tarja;
-            console.log(`Tarja atual: ${tarjaAtual}`);
-            let novaTarja = Input.question("Digite a nova tarja: ");
-            if (novaTarja === "") novaTarja = tarjaAtual;
-
-            produtos.atualizar(new Medicamento(idAtualizar, novoNome, tipo, novoPreco, novaTarja));
-          }
-
-        } else {
-          console.log("\nProduto não encontrado!");
-        }
-        keyPress();
-        break;
+                    if (prodEx.tipo === 1) {
+                        let fAt = (prodEx as Cosmetico).fragrancia;
+                        let novaF = Input.question(`Fragrancia (${fAt}): `);
+                        if (novaF === "") novaF = fAt;
+                        produtos.atualizar(new Cosmetico(idAt, novoNome, prodEx.tipo, novoPreco, novaF));
+                    } else {
+                        let tAt = (prodEx as Medicamento).tarja;
+                        let novaT = Input.question(`Tarja (${tAt}): `);
+                        if (novaT === "") novaT = tAt;
+                        produtos.atualizar(new Medicamento(idAt, novoNome, prodEx.tipo, novoPreco, novaT));
+                    }
+                } else {
+                    console.log("\nProduto nao encontrado!");
+                }
+                keyPress();
+                break;
 
             case 5:
-                console.log("\nDeletar Produto\n");
-                console.log("Digite o ID do produto que deseja deletar: ");
-                let idDeletar = Input.questionInt("");
-                produtos.deletar(idDeletar);
+                console.log("\n*****************************************************");
+                console.log("                DELETAR PRODUTO                      ");
+                console.log("*****************************************************\n");
+                let idDel = Input.questionInt("Digite o ID que deseja deletar: ");
+                produtos.deletar(idDel);
                 keyPress();
                 break;
 
             default:
-                console.log("\nOpção Inválida!\n");
+                console.log("\nOpcao Invalida!\n");
                 keyPress();
         }
     }
