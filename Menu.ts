@@ -1,21 +1,24 @@
 import { Input } from "./src/util/Input";
+import { ProdutoController } from "./src/controller/ProdutoController";
 import { Cosmetico } from "./src/model/Cosmetico";
 import { Maquiagem } from "./src/model/Maquiagem";
 import { Medicamento } from "./src/model/Medicamento";
 
-const batom = new Cosmetico(1, "Batom Matte Passoia", 1, 45.90,"Floral" );
-batom.visualizar();
+const produtos = new ProdutoController();
 
-const perfume = new Cosmetico(2, "Perfume Libre", 1, 580.00, "Floral");
+produtos.cadastrar(new Cosmetico(produtos.gerarId(), "Batom Matte Passoia", 1, 45.90, "Floral"));
+produtos.cadastrar(new Cosmetico(produtos.gerarId(), "Perfume Libre", 1, 580.00, "Floral"));
+produtos.cadastrar(new Maquiagem(produtos.gerarId(), "Base True Match", 1, 89.90, "Líquida"));
 
-const base = new Maquiagem(3, "Base True Match", 1, 89.90, "Líquida");
+console.log("\n--- Listagem de Produtos no Controller ---");
+produtos.listarTodos();
 
-const shampoo = new Medicamento(1, "Shampoo Hidratante", 2, 89.90, "Pós-Química");
 
-shampoo.visualizar();
-perfume.visualizar();
-base.visualizar();
+console.log("\n--- Teste de Busca por ID (ID: 2) ---");
+produtos.procurarPorId(2); 
 
+console.log("\n--- Teste de Busca por ID (ID: 99) ---");
+produtos.procurarPorId(99);
 export function main() {
 
     let opcao: number;
@@ -49,23 +52,36 @@ export function main() {
         switch (opcao) {
             case 1:
                 console.log("\nListar todos os Produtos\n");
+                 produtos.listarTodos(); 
                 keyPress();
+
                 break;
             case 2:
                 console.log("\nListar Produto pelo ID\n");
+                console.log("Digite o ID do produto: ");
+                let idBusca = Input.questionInt("");
+                produtos.procurarPorId(idBusca); 
                 keyPress();
+
                 break;
             case 3:
                 console.log("\nCadastrar Produto\n");
                 keyPress();
+
                 break;
             case 4:
                 console.log("\nAtualizar Produto\n");
                 keyPress();
+
                 break;
             case 5:
                 console.log("\nDeletar Produto\n");
+                
+                console.log("Digite o ID do produto que deseja deletar: ");
+                let idDeletar = Input.questionInt("");
+                produtos.deletar(idDeletar);
                 keyPress();
+
                 break;
             default:
                 console.log("\nOpção Inválida!\n");
