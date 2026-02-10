@@ -2,6 +2,7 @@ import { Produto } from "./Produto";
 
 export class Medicamento extends Produto {
     private _generico: string;
+    tarja: any;
 
     constructor(id: number, nome: string, tipo: number, preco: number, generico: string) {
         super(id, nome, tipo, preco);

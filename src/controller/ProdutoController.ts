@@ -29,16 +29,16 @@ export class ProdutoController implements ProdutoRepository {
     }
 
     atualizar(produto: Produto): void {
-        const buscaProduto = this.buscarNoArray(produto.id);
+    let buscaProduto = this.buscarNoArray(produto.id);
 
-        if (buscaProduto !== null) {
-            const indice = this.listaProdutos.indexOf(buscaProduto);
-            this.listaProdutos[indice] = produto;
-            console.log("\nO Produto foi atualizado com sucesso!");
-        } else {
-            console.log("\nProduto não encontrado!");
-        }
+    if (buscaProduto !== null) {
+        let indice = this.listaProdutos.indexOf(buscaProduto);
+        this.listaProdutos[indice] = produto;
+        console.log("\nO Produto foi atualizado com sucesso!");
+    } else {
+        console.log("\nProduto não encontrado!");
     }
+}
 
     deletar(id: number): void {
         const buscaProduto = this.buscarNoArray(id);
