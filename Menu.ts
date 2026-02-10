@@ -21,9 +21,6 @@ console.log("\n*** Teste de Busca por ID ***");
 produtos.procurarPorId(99);
 
 
-        // quero implementar um deseja comprar ou nao este produto? adicionar ao carrinho ou deletar
-        //  frete ou retirada na loja?
-        // formas de pagamento? pix ou boleto para online
 export function main() {
     let opcao: number;
 
